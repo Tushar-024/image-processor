@@ -1,0 +1,30 @@
+services:
+  redis-data-lake:
+    image: redislabs/redismod
+    container_name: redis-data-lake
+    ports:
+      - "6379:6379"
+    platform: linux/amd64
+  image-processor:
+    build: .
+    container_name: image-processor
+    ports:
+      - "5001:5001"
+    environment:
+
+    platform: linux/amd64
+    volumes:
+      - .:/code
+    depends_on:
+      - redis-data-lake
+      
+  celery-worker:
+    build: .
+    container_name: celery-worker
+    platform: linux/amd64
+    volumes:
+      - .:/code
+    depends_on:
+      - redis-data-lake
+      - image-processor
+    command: celery -A processData worker --loglevel=info
