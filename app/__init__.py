@@ -1,5 +1,5 @@
 from flask import Flask
-from .celery import make_celery
+# from .celery import make_celery
 
 
 def create_app():
@@ -11,8 +11,8 @@ def create_app():
     # Initialize MongoDB
 
     # Initialize Celery
-    celery = make_celery(app)
-    app.celery = celery
+    # celery = make_celery(app)
+    # app.celery = celery
 
     from controller.fileController import fileController_bp
 
