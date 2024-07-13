@@ -12,3 +12,4 @@ pandas
 openpyxl
 boto3
 redis
+gunicorn

@@ -1,0 +1,45 @@
+{
+	"info": {
+		"_postman_id": "8ca90010-2940-4556-9758-357d1f3fde42",
+		"name": "Assignment SDE1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36300682"
+	},
+	"item": [
+		{
+			"name": "Upload API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "postman-cloud:///1ef40f9f-451a-4340-83dd-dcd368bde283"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/upload",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status API",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

@@ -9,7 +9,7 @@ import pandas as pd
 import boto3
 
 
-celery = Celery("tasks", broker="redis://localhost:6379/0")
+celery = Celery("tasks", broker=os.getenv("REDIS_URL"))
 
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
