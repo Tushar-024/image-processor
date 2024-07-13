@@ -7,7 +7,7 @@ from io import BytesIO
 from utilities.dbConnection import dbConnectorClient
 import pandas as pd
 import boto3
-
+from datetime import datetime
 
 celery = Celery("tasks", broker=os.getenv("REDIS_URL"))
 
@@ -26,8 +26,6 @@ def process_images(request_id):
 
         file_path = request_data["file_path"]
         file_extension = file_path.split(".")[-1].lower()
-
-        print("Processing images")
 
         if file_extension == "csv":
             df = pd.read_csv(file_path)
@@ -117,6 +115,7 @@ def process_images(request_id):
             {
                 "$set": {
                     "status": "completed",
+                    "updated_at": datetime.now(),
                 }
             },
         )
@@ -130,8 +129,14 @@ def process_images(request_id):
                 "$set": {
                     "status": "failed",
                     "error": str(e),
+                    "updated_at": datetime.now(),
                 }
             },
         )
     finally:
+        try:
+            os.remove(file_path)
+            print(f"Temporary file {file_path} deleted.")
+        except Exception as e:
+            print(f"Failed to delete temporary file {file_path}: {e}")
         client.close()

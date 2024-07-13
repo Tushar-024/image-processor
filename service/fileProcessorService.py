@@ -6,7 +6,7 @@ import os
 from utilities.dbConnection import dbConnectorClient
 from processData import process_images
 from celery import Celery
-
+from datetime import datetime
 
 celery = Celery("tasks", broker=os.getenv("REDIS_URL"))
 
@@ -31,13 +31,35 @@ def upload_file():
 
         request_id = str(uuid.uuid4())
         requests_collection.insert_one(
-            {"request_id": request_id, "status": "processing", "file_path": file_path}
+            {
+                "request_id": request_id,
+                "status": "processing",
+                "file_path": file_path,
+                "created_at": datetime.now(),
+            }
         )
 
         process_images.delay(request_id)
 
-        return jsonify({"request_id": request_id}), 202
-    return jsonify({"error": "Invalid file type"}), 400
+        return (
+            jsonify(
+                {
+                    "request_id": request_id,
+                    "created_at": datetime.now(),
+                    "status": "processing",
+                }
+            ),
+            202,
+        )
+    return (
+        jsonify(
+            {
+                "error": "Invalid file type",
+                "status": "failed",
+            }
+        ),
+        400,
+    )
 
 
 def get_status(request_id):
@@ -45,7 +67,7 @@ def get_status(request_id):
     db = client["image_processing"]
     requests_collection = db["requests"]
 
-    request_data = requests_collection.find_one({"_id": request_id})
+    request_data = requests_collection.find_one({"request_id": request_id})
     if request_data:
         return jsonify({"status": request_data["status"]}), 200
     return jsonify({"error": "Request not found"}), 404
